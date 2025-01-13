@@ -30,8 +30,8 @@ const App = () => {
     <div className="calculator">
       <div className="display">
         <div className="input-display">Input: {input}</div>
-        <div className="output-display">Output: {output}</div>
       </div>
+     <div className="output-display">Output: {output}</div>
       <div className="buttons">
         {[
           "7",

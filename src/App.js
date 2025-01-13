@@ -1,30 +1,37 @@
 import React, { useState } from "react";
 import "./App.css";
+
 const App = () => {
   const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
 
   const handleClick = (value) => {
     if (value === "C") {
       setInput("");
+      setOutput("");
     } else if (value === "=") {
       try {
         if (input.trim() === "") {
-          setInput("Error");
+          setOutput("Error");
         } else {
           const result = eval(input);
-          setInput(result.toString());
+          setOutput(result.toString());
         }
       } catch (error) {
-        setInput("Error");
+        setOutput("Error");
       }
     } else {
       setInput((prev) => prev + value);
+      setOutput(""); // Clear output for intermediate input
     }
   };
 
   return (
     <div className="calculator">
-      <input type="text" value={input} readOnly className="display" />
+      <div className="display">
+        <div className="input-display">Input: {input}</div>
+        <div className="output-display">Output: {output}</div>
+      </div>
       <div className="buttons">
         {[
           "7",

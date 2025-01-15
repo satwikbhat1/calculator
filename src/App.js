@@ -14,24 +14,34 @@ const App = () => {
         if (input.trim() === "") {
           setOutput("Error");
         } else {
-          const result = eval(input);
+          // Avoid unsafe use of eval in production
+          const result = Function(`"use strict"; return (${input})`)();
           setOutput(result.toString());
         }
       } catch (error) {
         setOutput("Error");
       }
     } else {
-      setInput((prev) => prev + value);
-      setOutput(""); // Clear output for intermediate input
+      const lastChar = input.slice(-1);
+      if (
+        ["+", "-", "*", "/"].includes(value) &&
+        ["+", "-", "*", "/"].includes(lastChar)
+      ) {
+        // Prevent consecutive operators
+        setInput(input.slice(0, -1) + value);
+      } else {
+        setInput((prev) => prev + value);
+        setOutput(""); // Clear output for intermediate input
+      }
     }
   };
 
   return (
     <div className="calculator">
       <div className="display">
-        <div className="input-display">Input: {input}</div>
+        <div className="input-display">Input: {input || "0"}</div>
+        <div className="output-display">Output: {output || "0"}</div>
       </div>
-     <div className="output-display">Output: {output}</div>
       <div className="buttons">
         {[
           "7",

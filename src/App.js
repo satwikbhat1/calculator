@@ -7,14 +7,16 @@ const App = () => {
 
   const handleClick = (value) => {
     if (value === "C") {
+      // Fully reset input and output
       setInput("");
       setOutput("");
     } else if (value === "=") {
       try {
+        // Handle empty or invalid inputs safely
         if (input.trim() === "") {
           setOutput("Error");
         } else {
-          // Avoid unsafe use of eval in production
+          // Avoid unsafe eval in production
           const result = Function(`"use strict"; return (${input})`)();
           setOutput(result.toString());
         }
@@ -23,26 +25,30 @@ const App = () => {
       }
     } else {
       const lastChar = input.slice(-1);
+      // Prevent multiple consecutive operators
       if (
         ["+", "-", "*", "/"].includes(value) &&
         ["+", "-", "*", "/"].includes(lastChar)
       ) {
-        // Prevent consecutive operators
         setInput(input.slice(0, -1) + value);
       } else {
         setInput((prev) => prev + value);
-        setOutput(""); // Clear output for intermediate input
+        setOutput(""); // Clear output for new inputs
       }
     }
   };
 
   return (
-    <div className="calculator">
+    <div className="calculator" id="calculator">
       <div className="display">
-        <div className="input-display">Input: {input || "0"}</div>
-        <div className="output-display">Output: {output || "0"}</div>
+        <div className="input-display" id="input">
+          Input: {input || "0"}
+        </div>
+        <div className="output-display" id="output">
+          Output: {output || "0"}
+        </div>
       </div>
-      <div className="buttons">
+      <div className="buttons" id="buttons">
         {[
           "7",
           "8",
@@ -63,6 +69,7 @@ const App = () => {
         ].map((button) => (
           <button
             key={button}
+            id={`btn-${button}`}
             onClick={() => handleClick(button)}
             className={`btn ${button === "C" ? "btn-clear" : ""}`}
           >

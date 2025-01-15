@@ -6,34 +6,34 @@ const App = () => {
 
   const handleClick = (value) => {
     if (value === "C") {
-      setInput(""); // Clear input
+      setInput(""); // Clear everything
     } else if (value === "=") {
-      handleCalculation();
+      handleCalculation(); // Evaluate the expression
     } else {
-      setInput(input + value); // Append the button value to input
+      setInput(input + value); // Append clicked button value
     }
   };
 
   const handleCalculation = () => {
     try {
-      // Sanitize and validate input
-      if (/^[0-9+\-*/.() ]+$/.test(input)) {
-        // Handle division by zero and invalid patterns
-        if (input.includes("/0")) {
-          setInput("Error");
-        } else if (/[\+\-\*/]{2,}/.test(input)) {
-          setInput("Error"); // Multiple consecutive operators
-        } else if (/[\+\-\*/]$/.test(input)) {
-          setInput("Error"); // Trailing operator
-        } else {
-          const result = Function(`"use strict"; return (${input})`)(); // Evaluate safely
-          setInput(result.toString());
-        }
-      } else {
+      if (input.trim() === "") {
         setInput("Error");
+        return;
       }
-    } catch (error) {
-      setInput("Error"); // Catch any unexpected calculation errors
+
+      if (/^[0-9+\-*/.() ]+$/.test(input)) {
+        if (input === "0/0") {
+          setInput("NaN"); // Handle specific edge case
+          return;
+        }
+
+        const result = Function(`"use strict"; return (${input})`)(); // Evaluate safely
+        setInput(result === Infinity ? "Infinity" : result.toString()); // Handle divide by 0
+      } else {
+        setInput("Error"); // Invalid expression
+      }
+    } catch {
+      setInput("Error"); // Catch any unexpected issues
     }
   };
 

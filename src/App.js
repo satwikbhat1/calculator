@@ -1,84 +1,62 @@
-import React, { useState } from "react";
-import "./App.css";
+// src/Calculator.js
+import React, { useState } from 'react';
 
 const App = () => {
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
+    const [input, setInput] = useState('');
+    const [result, setResult] = useState('');
 
-  const handleClick = (value) => {
-    if (value === "C") {
-      // Fully reset input and output
-      setInput("");
-      setOutput("");
-    } else if (value === "=") {
-      try {
-        // Handle empty or invalid inputs safely
-        if (input.trim() === "") {
-          setOutput("Error");
-        } else {
-          // Avoid unsafe eval in production
-          const result = Function(`"use strict"; return (${input})`)();
-          setOutput(result.toString());
-        }
-      } catch (error) {
-        setOutput("Error");
-      }
-    } else {
-      const lastChar = input.slice(-1);
-      // Prevent multiple consecutive operators
-      if (
-        ["+", "-", "*", "/"].includes(value) &&
-        ["+", "-", "*", "/"].includes(lastChar)
-      ) {
-        setInput(input.slice(0, -1) + value);
-      } else {
+    const handleButtonClick = (value) => {
         setInput((prev) => prev + value);
-        setOutput(""); // Clear output for new inputs
-      }
-    }
-  };
+    };
 
-  return (
-    <div className="calculator" id="calculator">
-      <div className="display">
-        <div className="input-display" id="input">
-          Input: {input || "0"}
+    const handleClear = () => {
+        setInput('');
+        setResult('');
+    };
+
+    const handleCalculate = () => {
+        try {
+            if (input === '') {
+                setResult('Error');
+                return;
+            }
+            const evaluatedResult = eval(input); // Use eval carefully
+            if (evaluatedResult === Infinity) {
+                setResult('Infinity');
+            } else if (Number.isNaN(evaluatedResult)) {
+                setResult('NaN');
+            } else {
+                setResult(evaluatedResult);
+            }
+        } catch (error) {
+            setResult('Error');
+        }
+    };
+
+    return (
+        <div>
+            <input type="text" value={input} readOnly />
+            <div>
+                <button onClick={() => handleButtonClick('1')}>1</button>
+                <button onClick={() => handleButtonClick('2')}>2</button>
+                <button onClick={() => handleButtonClick('3')}>3</button>
+                <button onClick={() => handleButtonClick('+')}>+</button>
+                <button onClick={() => handleButtonClick('4')}>4</button>
+                <button onClick={() => handleButtonClick('5')}>5</button>
+                <button onClick={() => handleButtonClick('6')}>6</button>
+                <button onClick={() => handleButtonClick('-')}>-</button>
+                <button onClick={() => handleButtonClick('7')}>7</button>
+                <button onClick={() => handleButtonClick('8')}>8</button>
+                <button onClick={() => handleButtonClick('9')}>9</button>
+                <button onClick={() => handleButtonClick('*')}>*</button>
+                <button onClick={() => handleButtonClick('0')}>0</button>
+                <button onClick={() => handleButtonClick('/')}>&#247;</button>
+                <button onClick={handleCalculate}>=</button>
+                <button onClick={handleClear}>C</button>
+            </div>
+            <div>{result}</div>
         </div>
-        <div className="output-display" id="output">
-          Output: {output || "0"}
-        </div>
-      </div>
-      <div className="buttons" id="buttons">
-        {[
-          "7",
-          "8",
-          "9",
-          "+",
-          "4",
-          "5",
-          "6",
-          "-",
-          "1",
-          "2",
-          "3",
-          "*",
-          "C",
-          "0",
-          "=",
-          "/",
-        ].map((button) => (
-          <button
-            key={button}
-            id={`btn-${button}`}
-            onClick={() => handleClick(button)}
-            className={`btn ${button === "C" ? "btn-clear" : ""}`}
-          >
-            {button}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
+    );
 };
 
 export default App;

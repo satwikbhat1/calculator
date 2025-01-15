@@ -1,20 +1,39 @@
 import React, { useState } from "react";
-import "./App.css"; 
+import "./App.css";
 
 const App = () => {
   const [input, setInput] = useState("");
 
   const handleClick = (value) => {
     if (value === "C") {
-      setInput("");
+      setInput(""); // Clear input
     } else if (value === "=") {
-      try {
-        setInput(eval(input).toString()); // Evaluate the input (use cautiously)
-      } catch {
+      handleCalculation();
+    } else {
+      setInput(input + value); // Append the button value to input
+    }
+  };
+
+  const handleCalculation = () => {
+    try {
+      // Sanitize and validate input
+      if (/^[0-9+\-*/.() ]+$/.test(input)) {
+        // Handle division by zero and invalid patterns
+        if (input.includes("/0")) {
+          setInput("Error");
+        } else if (/[\+\-\*/]{2,}/.test(input)) {
+          setInput("Error"); // Multiple consecutive operators
+        } else if (/[\+\-\*/]$/.test(input)) {
+          setInput("Error"); // Trailing operator
+        } else {
+          const result = Function(`"use strict"; return (${input})`)(); // Evaluate safely
+          setInput(result.toString());
+        }
+      } else {
         setInput("Error");
       }
-    } else {
-      setInput(input + value);
+    } catch (error) {
+      setInput("Error"); // Catch any unexpected calculation errors
     }
   };
 
